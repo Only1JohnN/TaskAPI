@@ -19,21 +19,24 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import path, include
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
+from django.views.generic import RedirectView
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    
+
     path('api/v1/', include('tasks.urls')),  # Include the tasks app URLs
     path('api/v1/', include('users.urls')),  # Include the users app URLs
-    
+
+    path('', RedirectView.as_view(url='/api/v1/register/', permanent=False)),  # 👈 redirect root to API
+
     # Schema and Documentation
     path('schema/', SpectacularAPIView.as_view(), name='schema'),
     path('swagger/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
     path('redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
-    
+
 ]
+
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-
