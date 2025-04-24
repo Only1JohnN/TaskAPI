@@ -1,0 +1,109 @@
+# Define reusable variables
+@base_url = http://127.0.0.1:8000/api/v1
+@access_token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ1NDg5ODk0LCJpYXQiOjE3NDU0ODk1OTQsImp0aSI6ImM5Njg3ZjE0NmE2NjRkNTc4ODg1NzFhNzFjN2Q5ODBkIiwidXNlcl9pZCI6Mn0.H6thstL8299-123Dk57XRcQcS3hDN0TmSWAFX4ILs3I
+@refresh_token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc0NTU3NTk5NCwiaWF0IjoxNzQ1NDg5NTk0LCJqdGkiOiJmODkxMGRkNDQ2NDY0MmY5YjUzYTk5MjIxZWU3OGJlYiIsInVzZXJfaWQiOjJ9.sabtMd4jxrmuGUHQ3qkHRoUsmg9yxMudfjIamLumw24
+@verification_token = cord14-4391f095b12cc093facdeaca309913fc
+@uid =Mg
+@email = testuser@yopmail.com
+@first_name = Test
+@last_name = User
+@password = Password123!
+@new_password = SecurePassword123!
+@task_title = Test Task
+@task_description = Description of the test task.
+@task_due_date = 2025-04-30
+@task_completed = false
+@task_priority = medium
+@task_tags = budget, money
+@search_query = test
+
+
+######################################################
+### Register a new user
+POST {{base_url}}/register/
+Content-Type: application/json
+
+{
+  "email": "{{email}}",
+  "first_name": "{{first_name}}",
+  "last_name": "{{last_name}}",
+  "profile_picture": null,
+  "password": "{{password}}",
+  "confirm_password": "{{password}}"
+}
+
+
+######################################################
+### Verify email
+GET {{base_url}}/verify-email/?uid={{uid}}&token={{verification_token}}
+Content-Type: application/json
+
+
+######################################################
+### Login a user
+POST {{base_url}}/login/
+Content-Type: application/json
+
+{
+  "email": "{{email}}",
+  "password": "{{password}}"
+}
+
+
+######################################################
+### Create a new task
+POST {{base_url}}/tasks/
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "title": "{{task_title}}",
+  "description": "{{task_description}}",
+  "due_date": "{{task_due_date}}",
+  "completed": "{{task_completed}}",
+  "priority": "{{task_priority}}",
+  "tags": "{{task_tags}}"
+}
+
+
+######################################################
+### List tasks
+GET {{base_url}}/tasks/
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+
+######################################################
+### Retrieve a specific task by ID
+GET {{base_url}}/tasks/4/
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+
+######################################################
+### Search for tasks
+GET {{base_url}}/tasks/?search={{search_query}}
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+
+######################################################
+### Logout user
+POST {{base_url}}/logout/
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "refresh": "{{refresh_token}}"
+}
+
+
+######################################################
+### Refresh JWT token
+POST {{base_url}}/refresh/
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "refresh": "{{refresh_token}}"
+}

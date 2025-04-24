@@ -1,0 +1,54 @@
+# Python
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+*.pdb
+*.swp
+
+# Django
+*.log
+*.pot
+*.pyc
+__pycache__/
+db.sqlite3
+*.sqlite3
+media/
+static/
+
+# Virtual Environment
+venv/
+env/
+.venv/
+.env/
+
+# PyCharm
+.idea/
+
+# VS Code
+.vscode/
+
+# Test and coverage reports
+.coverage
+coverage.xml
+nosetests.xml
+test_*.xml
+
+# MySQL and Postgres Databases
+*.db
+*.sql
+*.sqlite
+
+# Django migrations
+*/migrations/*
+!*/migrations/__init__.py
+
+# Celery and other background workers
+celerybeat-schedule
+*.pid
+
+# Environment variables
+.env
+
+# Sentry configuration
+sentry.conf.py
