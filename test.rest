@@ -1,7 +1,7 @@
 # Define reusable variables
 @base_url = http://127.0.0.1:8000/api/v1
-@access_token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ1NDg5ODk0LCJpYXQiOjE3NDU0ODk1OTQsImp0aSI6ImM5Njg3ZjE0NmE2NjRkNTc4ODg1NzFhNzFjN2Q5ODBkIiwidXNlcl9pZCI6Mn0.H6thstL8299-123Dk57XRcQcS3hDN0TmSWAFX4ILs3I
-@refresh_token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc0NTU3NTk5NCwiaWF0IjoxNzQ1NDg5NTk0LCJqdGkiOiJmODkxMGRkNDQ2NDY0MmY5YjUzYTk5MjIxZWU3OGJlYiIsInVzZXJfaWQiOjJ9.sabtMd4jxrmuGUHQ3qkHRoUsmg9yxMudfjIamLumw24
+@access_token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ1NjA5NTg0LCJpYXQiOjE3NDU2MDkyODQsImp0aSI6ImM3MTI0MDIzYWZiMTRhYWM4MjMzNDRjYmZmNGNiOGJhIiwidXNlcl9pZCI6MjZ9.pEciQUWj-RJFjhBVCvHtwnNVRiFJbcsyawSJMltIrEM
+@refresh_token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc0NTY5NDg3MiwiaWF0IjoxNzQ1NjA4NDcyLCJqdGkiOiJmMjk5YjRiMzY3NjU0Mzc2OTczMTE5YzA1MzUyMzFlMCIsInVzZXJfaWQiOjI2fQ.WqkR5lrh4HzlnqX2VcUw4QAesMg7PYwMJmuiweHSL2E
 @verification_token = cord14-4391f095b12cc093facdeaca309913fc
 @uid =Mg
 @email = testuser@yopmail.com
@@ -75,7 +75,7 @@ Authorization: Bearer {{access_token}}
 
 ######################################################
 ### Retrieve a specific task by ID
-GET {{base_url}}/tasks/4/
+GET {{base_url}}/tasks/10/
 Content-Type: application/json
 Authorization: Bearer {{access_token}}
 

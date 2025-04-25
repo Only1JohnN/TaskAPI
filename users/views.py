@@ -8,8 +8,6 @@ from rest_framework_simplejwt.token_blacklist.models import BlacklistedToken, Ou
 from django.utils.http import urlsafe_base64_decode
 from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator
-from drf_spectacular.utils import extend_schema, extend_schema_view
-from drf_spectacular.openapi import AutoSchema
 
 User = get_user_model()
 
@@ -50,19 +48,26 @@ class LogoutView(APIView):
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 class VerifyEmailView(APIView):
-    
+    permission_classes = [AllowAny]
+
     def get(self, request):
         uidb64 = request.GET.get("uid")
         token = request.GET.get("token")
+
+        if not uidb64 or not token:
+            return Response({"error": "Missing UID or token"}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
             uid = urlsafe_base64_decode(uidb64).decode()
             user = User.objects.get(pk=uid)
 
             if default_token_generator.check_token(user, token):
-                user.is_active = True
-                user.save()
-                return Response({"detail": "Email verified."}, status=200)
-            return Response({"error": "Invalid token"}, status=400)
-        except Exception:
-            return Response({"error": "Invalid request"}, status=400)
+                if not user.is_active:
+                    user.is_active = True
+                    user.save()
+                    return Response({"message": "Email verified successfully."}, status=status.HTTP_200_OK)
+                return Response({"message": "Email already verified."}, status=status.HTTP_200_OK)
+            else:
+                return Response({"error": "Invalid or expired token."}, status=status.HTTP_400_BAD_REQUEST)
+        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+            return Response({"error": "Invalid user ID."}, status=status.HTTP_400_BAD_REQUEST)

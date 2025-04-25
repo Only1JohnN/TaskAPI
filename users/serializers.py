@@ -23,7 +23,7 @@ class RegisterSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data.pop('confirm_password')
         user = User.objects.create_user(**validated_data)
-        user.is_active = False  # Require verification
+        user.is_active = True  # Does not require verification for now cos of email service
         user.save()
         
         send_verification_email(user)
@@ -56,6 +56,7 @@ class LoginSerializer(serializers.Serializer):
             raise serializers.ValidationError("Invalid email or password.")
 
         refresh = RefreshToken.for_user(user)
+        user.save() # Update last_login field
         return {
             "refresh": str(refresh),
             "access": str(refresh.access_token),
@@ -66,6 +67,8 @@ class LoginSerializer(serializers.Serializer):
                 "last_name": user.last_name,
                 "is_active": user.is_active,
                 "date_joined": user.date_joined,
-                "last_login": user.last_login,
+                "last_login": getattr(user, 'last_login', None),
+                "profile_picture": user.profile_picture.url if user.profile_picture else None,
             }
         }
+        
