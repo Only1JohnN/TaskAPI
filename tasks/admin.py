@@ -17,13 +17,6 @@ class TaskModelAdmin(admin.ModelAdmin):
         ('User Information', {'fields': ('user',)}),  # Reference to CustomUser
     )
     
-    # Add fields for task creation
-    add_fieldsets = (
-        (None, {
-            'classes': ('wide',),
-            'fields': ('user', 'title', 'description', 'due_date', 'completed', 'priority', 'tags', 'attach_photo', 'location')}
-        ),
-    )
 # Customizing the Admin site
 admin.site.site_header = "Task Management System"
 admin.site.site_title = "TaskAPI"

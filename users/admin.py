@@ -2,6 +2,8 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django import forms
 from .models import CustomUser
+from rest_framework_simplejwt.token_blacklist import admin as blacklist_admin
+from rest_framework_simplejwt.token_blacklist.models import OutstandingToken, BlacklistedToken
 
 class CustomUserCreationForm(forms.ModelForm):
     class Meta:
@@ -37,3 +39,5 @@ class CustomUserAdmin(UserAdmin):
 
 # Register CustomUser with CustomUserAdmin
 admin.site.register(CustomUser, CustomUserAdmin)
+admin.site.unregister(BlacklistedToken)
+admin.site.unregister(OutstandingToken)

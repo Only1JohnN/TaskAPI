@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
+from rest_framework.validators import UniqueValidator
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
 from .utils import send_verification_email
@@ -10,10 +11,18 @@ User = get_user_model()
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, validators=[validate_password])
     confirm_password = serializers.CharField(write_only=True)
+    email = serializers.EmailField(
+        validators=[
+            UniqueValidator(
+                queryset=User.objects.all(),
+                message="A user with this email already exists."
+            )
+        ]
+    )
 
     class Meta:
         model = User
-        fields = ['email', 'first_name', 'last_name', 'profile_picture', 'password', 'confirm_password']
+        fields = ['first_name', 'last_name', 'email', 'profile_picture', 'password', 'confirm_password']
 
     def validate(self, data):
         if data['password'] != data['confirm_password']:
@@ -49,14 +58,14 @@ class LoginSerializer(serializers.Serializer):
 
         if not user.is_active:
             raise serializers.ValidationError("Account is inactive. Please verify your account")
-
+        
+       # Authenticate the user
         user = authenticate(request, email=email, password=password)
 
         if not user:
             raise serializers.ValidationError("Invalid email or password.")
 
         refresh = RefreshToken.for_user(user)
-        user.save() # Update last_login field
         return {
             "refresh": str(refresh),
             "access": str(refresh.access_token),

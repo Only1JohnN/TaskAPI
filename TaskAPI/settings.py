@@ -131,10 +131,22 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
         'rest_framework.authentication.SessionAuthentication',
     ),
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated'  
+        
+    ],
     'DEFAULT_RENDERER_CLASSES': (
         'rest_framework.renderers.JSONRenderer',
         'rest_framework.renderers.BrowsableAPIRenderer',  # <-- THIS ENABLES THE UI
     ),
+    'DEFAULT_THROTTLE_CLASSES': [
+        # 'rest_framework.throttling.UserRateThrottle',  # Apply to user-based requests - Global throttling
+        # "rest_framework.throttling.AnonRateThrottle",   # Apply to non-user-based requests - Global throttling
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'user': '5/minute',  # Limit to 5 requests per minute per user
+        "anon": "5/minute",  # Limit to 5 requests per minute per user
+    },
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
@@ -176,15 +188,15 @@ else:  # Production environment
 
 # JWT Authentication Settings
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),  # Access token expires in 5 minutes
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),     # Refresh token expires in 1 day
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),  # Access token expires in 15 minutes
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),     # Refresh token expires in 7 days
     'ROTATE_REFRESH_TOKENS': False,                 # Refresh token rotation disabled
-    'BLACKLIST_AFTER_ROTATION': True,               # Enable blacklisting after rotation
+    'BLACKLIST_AFTER_ROTATION': True,               # Blacklist old refresh tokens after rotation
     'AUTH_TOKEN_CLASSES': ("rest_framework_simplejwt.tokens.AccessToken",),
     'TOKEN_BLACKLIST_ENABLED': True,                # Enable blacklisting
 }
 
-AUTHENTICATION_BACKENDS = [
+AUTHENTICATION_BACKENDS = [    
     'django.contrib.auth.backends.ModelBackend',  # Default authentication backend
 ]
 
