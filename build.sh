@@ -2,7 +2,7 @@
 
 # === Setup ===
 echo "📁 Navigating to project directory..."
-cd /home/Only1JohnN/
+cd /home/Only1JohnN/TaskAPI
 
 # === Activate virtualenv ===
 echo "🐍 Activating virtual environment..."
