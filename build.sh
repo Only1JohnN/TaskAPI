@@ -1,20 +1,33 @@
 #!/bin/bash
 
-# === Setup ===
-echo "📁 Navigating to project directory..."
-cd /home/Only1JohnN/
+# === Fail fast if any command fails ===
+set -e
 
-# === Activate virtualenv ===
+echo "🚀 Starting deployment script..."
+
+# === Confirm you are inside project folder ===
+echo "📁 Checking project directory..."
+PROJECT_DIR="$HOME/TaskAPI"
+if [ "$(pwd)" != "$PROJECT_DIR" ]; then
+    echo "❗ Wrong directory. Navigating to project directory..."
+    cd "$PROJECT_DIR"
+fi
+
+# === Activate virtual environment ===
 echo "🐍 Activating virtual environment..."
+if [ ! -f "venv/bin/activate" ]; then
+    echo "❗ Virtual environment not found! Exiting."
+    exit 1
+fi
 source venv/bin/activate
 
-# === Pull latest code ===
-echo "⬇️ Pulling latest changes from GitHub..."
+# === Pull latest code from GitHub ===
+echo "⬇️ Pulling latest code..."
 git pull origin main
 
-# === Install dependencies ===
-echo "📦 Installing requirements..."
-pip install -r requirements.txt
+# === Install/update dependencies ===
+echo "📦 Installing dependencies..."
+pip install --upgrade -r requirements.txt
 
 # === Apply database migrations ===
 echo "🛠️ Applying migrations..."
@@ -24,13 +37,12 @@ python manage.py migrate --noinput
 echo "📁 Collecting static files..."
 python manage.py collectstatic --noinput
 
-# === Confirm Debug settings ===
+# === Confirm Debug setting ===
 echo "⚙️ DEBUG setting:"
 python manage.py shell -c "from django.conf import settings; print(settings.DEBUG)"
 
-
-# === Reload the web app ===
+# === Reload the WSGI app ===
 echo "🚀 Reloading web app..."
 touch /var/www/only1johnn_pythonanywhere_com_wsgi.py
 
-echo "✅ Done! Deployed and running."
+echo "✅ Deployment finished successfully!"
