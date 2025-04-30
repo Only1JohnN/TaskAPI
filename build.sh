@@ -7,7 +7,7 @@ echo "🚀 Starting deployment script..."
 
 # === Confirm you are inside project folder ===
 echo "📁 Checking project directory..."
-PROJECT_DIR="$HOME/TaskAPI"
+PROJECT_DIR="/root/TaskAPI"  # Absolute path to the TaskAPI project folder
 if [ "$(pwd)" != "$PROJECT_DIR" ]; then
     echo "❗ Wrong directory. Navigating to project directory..."
     cd "$PROJECT_DIR"
@@ -23,7 +23,7 @@ source venv/bin/activate
 
 # === Pull latest code from GitHub ===
 echo "⬇️ Pulling latest code..."
-git pull origin main
+git pull origin staging
 
 # === Install/update dependencies ===
 echo "📦 Installing dependencies..."
@@ -40,9 +40,5 @@ python manage.py collectstatic --noinput
 # === Confirm Debug setting ===
 echo "⚙️ DEBUG setting:"
 python manage.py shell -c "from django.conf import settings; print(settings.DEBUG)"
-
-# === Reload the WSGI app ===
-echo "🚀 Reloading web app..."
-touch /var/www/only1johnn_pythonanywhere_com_wsgi.py
 
 echo "✅ Deployment finished successfully!"
