@@ -97,6 +97,9 @@ else:
             'PASSWORD': config('MYSQLPASSWORD'),
             'HOST': config('MYSQLHOST', default='db'),  # Docker service name is `db`
             'PORT': config('MYSQLPORT', default='28652'),
+            'OPTIONS': {
+                'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+            }
         }
     }
 
