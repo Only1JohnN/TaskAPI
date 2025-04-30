@@ -31,6 +31,7 @@ pip install --upgrade -r requirements.txt
 
 # === Apply database migrations ===
 echo "🛠️ Applying migrations..."
+python manage.py makemigrations
 python manage.py migrate --noinput
 
 # === Collect static files ===
