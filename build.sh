@@ -49,6 +49,9 @@ python manage.py collectstatic --noinput
 
 # === Confirm Debug setting ===
 echo "⚙️ DEBUG setting:"
-python manage.py shell -c "from django.conf import settings; print(settings.DEBUG)"
+python manage.py shell << END
+from django.conf import settings
+print(settings.DEBUG)
+END
 
 echo "✅ Deployment finished successfully!"
