@@ -46,7 +46,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',                # CORS-HEADERS
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware'            # White Noise
+    'whitenoise.middleware.WhiteNoiseMiddleware',            # White Noise
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -79,7 +79,7 @@ WSGI_APPLICATION = 'TaskAPI.wsgi.application'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 # Check if the environment is development or production
-if config('DEBUG', default=False, cast=bool):
+if DEBUG:
     # SQLite for development
     DATABASES = {
         'default': {
