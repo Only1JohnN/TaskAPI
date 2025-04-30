@@ -7,27 +7,23 @@ echo "🚀 Starting deployment script..."
 
 # === Confirm you are inside project folder ===
 echo "📁 Checking project directory..."
-PROJECT_DIR="/root/TaskAPI"  # Absolute path to the TaskAPI project folder
+PROJECT_DIR="/Only1JohnN/TaskAPI"  # Update this to the correct root directory on Railway
 if [ "$(pwd)" != "$PROJECT_DIR" ]; then
     echo "❗ Wrong directory. Navigating to project directory..."
     cd "$PROJECT_DIR"
 fi
 
-# === Activate virtual environment ===
-echo "🐍 Activating virtual environment..."
-if [ ! -f "venv/bin/activate" ]; then
-    echo "❗ Virtual environment not found! Exiting."
-    exit 1
+# === Create and activate virtual environment ===
+echo "🐍 Setting up virtual environment..."
+if [ ! -d "venv" ]; then
+    echo "❗ Virtual environment not found! Creating it..."
+    python3 -m venv venv  # Create the virtual environment
 fi
-source venv/bin/activate
+source venv/bin/activate  # Activate the virtual environment
 
-# === Pull latest code from GitHub ===
-echo "⬇️ Pulling latest code..."
-git pull origin staging
-
-# === Install/update dependencies ===
+# === Install dependencies ===
 echo "📦 Installing dependencies..."
-pip install --upgrade -r requirements.txt
+pip install --upgrade -r requirements.txt  # Install the dependencies
 
 # === Apply database migrations ===
 echo "🛠️ Applying migrations..."
