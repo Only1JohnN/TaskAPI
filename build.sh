@@ -41,10 +41,10 @@ pip install --upgrade -r "$REQUIREMENTS_FILE"  # Install the dependencies
 
 # === Apply database migrations ===
 echo "🛠️ Applying migrations..."
-python manage.py migrate --noinput
+python3 manage.py migrate --noinput || { echo "Migrations failed"; exit 1; }
 
 # === Collect static files ===
 echo "📁 Collecting static files..."
-python manage.py collectstatic --noinput
+python3 manage.py collectstatic --noinput || { echo "Collectstatic failed"; exit 1; }
 
 echo "✅ Deployment finished successfully!"
