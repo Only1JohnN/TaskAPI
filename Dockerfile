@@ -1,25 +1,30 @@
-# Use an official Python runtime as the base image
-FROM python:3.12-slim
+# Use an official Python runtime as a parent image
+FROM python:3.11-slim-buster
 
-# Set environment variables
-ENV PYTHONUNBUFFERED 1
-
-# Set the working directory inside the container
+# Set the working directory in the container
 WORKDIR /app
 
-# Install dependencies
-COPY requirements.txt /app/
+# Copy the requirements file into the container
+COPY requirements.txt .
+
+# Install any dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the entire project to the container
-COPY . /app/
+# Copy the project files into the container
+COPY . .
 
-# Run migrations and collect static files
-RUN python manage.py migrate --noinput
+# Set environment variables (you might also set these in Railway)
+ENV DJANGO_SETTINGS_MODULE=TaskAPI.settings
+ENV PYTHONUNBUFFERED=1
+
+# Collect static files
 RUN python manage.py collectstatic --noinput
 
-# Expose the port your app will run on
+# Run database migrations
+RUN python manage.py migrate
+
+# Expose the port that Gunicorn will listen on (Railway will handle the external mapping)
 EXPOSE 8000
 
-# Start the Django app
-CMD ["gunicorn", "TaskAPI.wsgi:application", "--bind", "0.0.0.0:8000"]
+# Define the command to run the application
+CMD ["gunicorn", "TaskAPI.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "3"]
