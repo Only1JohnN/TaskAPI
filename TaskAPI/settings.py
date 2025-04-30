@@ -8,7 +8,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
-from decouple import config
+from decouple import config, Csv
 import os
 from datetime import timedelta
 
@@ -18,7 +18,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Secret Key and Debug Settings
 SECRET_KEY = config('SECRET_KEY')
 DEBUG = config('DEBUG', default=False, cast=bool)
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'only1johnn.pythonanywhere.com']
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=Csv(), default=['localhost', '127.0.0.1'])
+CORS_ALLOWED_ORIGINS = config('CORS_ALLOWED_ORIGINS', cast=Csv(), default='http://localhost:3000')
+
 
 # Application Definition
 INSTALLED_APPS = [
@@ -32,6 +34,8 @@ INSTALLED_APPS = [
     'rest_framework',  # Django REST framework
     'rest_framework_simplejwt.token_blacklist',  # Optional for logout
     
+    'corsheaders',
+    
     'tasks',  # Your tasks app
     'users',  # Your users app
     
@@ -40,6 +44,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',                #CORS-HEADERS
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -72,12 +77,27 @@ WSGI_APPLICATION = 'TaskAPI.wsgi.application'
 # Database Configuration
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+# Check if the environment is development or production
+if config('DEBUG', default=False, cast=bool):
+    # SQLite for development
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
     }
-}
+else:
+    # MySQL for production
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': config('MYSQL_DATABASE'),
+            'USER': config('MYSQL_USER'),
+            'PASSWORD': config('MYSQL_PASSWORD'),
+            'HOST': config('MYSQL_HOST', default='db'),  # Docker service name is `db`
+            'PORT': config('MYSQL_PORT', default='28652'),
+        }
+    }
 
 # Password Validation Settings
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
@@ -169,14 +189,14 @@ SPECTACULAR_SETTINGS = {
 AUTH_USER_MODEL = 'users.CustomUser'
 
 
-# Base email settings (common to both dev and prod)
+# Common email setting
 DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='adeniyijohn2002@gmail.com')
 
-if DEBUG:  # Development environment
+if DEBUG:  # Development
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
     SITE_DOMAIN = 'localhost:8000/api/v1'
 
-else:  # Production environment
+else:  # Production
     EMAIL_BACKEND = config('EMAIL_BACKEND', default='django.core.mail.backends.smtp.EmailBackend')
     EMAIL_HOST = config('EMAIL_HOST', default='smtp.gmail.com')
     EMAIL_HOST_USER = config('EMAIL_HOST_USER')
@@ -186,36 +206,45 @@ else:  # Production environment
     EMAIL_TIMEOUT = config('EMAIL_TIMEOUT', cast=int, default=20)
     SITE_DOMAIN = config('SITE_DOMAIN', default='only1johnn.pythonanywhere.com')
 
+    # Security settings — only enable in production
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    X_FRAME_OPTIONS = 'DENY'
+
+
 # JWT Authentication Settings
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),  # Access token expires in 15 minutes
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),     # Refresh token expires in 7 days
     'ROTATE_REFRESH_TOKENS': False,                 # Refresh token rotation disabled
     'BLACKLIST_AFTER_ROTATION': True,               # Blacklist old refresh tokens after rotation
-    'AUTH_TOKEN_CLASSES': ("rest_framework_simplejwt.tokens.AccessToken",),
     'TOKEN_BLACKLIST_ENABLED': True,                # Enable blacklisting
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
 }
+
 
 AUTHENTICATION_BACKENDS = [    
     'django.contrib.auth.backends.ModelBackend',  # Default authentication backend
 ]
 
-# # Logging Configuration
-# LOGGING = {
-#     'version': 1,
-#     'disable_existing_loggers': False,
-#     'handlers': {
-#         'file': {
-#             'level': 'DEBUG',  # DEBUG < INFO < WARNING < ERROR < CRITICAL
-#             'class': 'logging.FileHandler',
-#             'filename': 'django_errors.log',
-#         },
-#     },
-#     'loggers': {
-#         'django': {
-#             'handlers': ['file'],
-#             'level': 'DEBUG',  # DEBUG < INFO < WARNING < ERROR < CRITICAL
-#             'propagate': True,
-#         },
-#     },
-# }
+# Logging setup
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'WARNING',     # DEBUG < INFO < WARNING < ERROR < CRITICAL
+            'class': 'logging.FileHandler',
+            'filename': BASE_DIR / 'debug.log',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'level': 'WARNING',
+            'propagate': True,
+        },
+    },
+}
