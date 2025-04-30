@@ -7,7 +7,7 @@ echo "🚀 Starting deployment script..."
 
 # === Confirm you are inside project folder ===
 echo "📁 Checking project directory..."
-PROJECT_DIR="/app/TaskAPI"  # This should be the directory containing 'requirements.txt' and your project files
+PROJECT_DIR="/app"  # This should be the directory containing 'requirements.txt' and your project files
 if [ "$(pwd)" != "$PROJECT_DIR" ]; then
     echo "❗ Wrong directory. Navigating to project directory..."
     echo "Current directory: $(pwd)"
