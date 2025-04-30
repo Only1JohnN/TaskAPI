@@ -41,11 +41,11 @@ pip install --upgrade -r "$REQUIREMENTS_FILE"  # Install the dependencies
 
 # === Check if the database settings are correct ===
 echo "🔧 Checking database settings..."
-echo "Database URL: $DATABASE_URL"  # If you're using a DATABASE_URL environment variable
+echo "Database URL: $DATABASE_URL"  # Check if DATABASE_URL is set correctly (or add more if needed)
 
-# === Apply database migrations ===
-echo "🛠️ Running migrations..."
-python manage.py migrate --noinput || { echo "❗ Migrations failed"; exit 1; }
+# === Apply database migrations with verbose output ===
+echo "🛠️ Running migrations with verbose output..."
+python manage.py migrate --noinput --verbosity 3 || { echo "❗ Migrations failed"; exit 1; }
 
 # === Collect static files ===
 echo "📁 Collecting static files..."
