@@ -92,10 +92,10 @@ else:
         'default': {
             'ENGINE': 'django.db.backends.mysql',
             'NAME': config('MYSQL_DATABASE'),
-            'USER': config('MYSQL_USER'),
-            'PASSWORD': config('MYSQL_PASSWORD'),
-            'HOST': config('MYSQL_HOST', default='db'),  # Docker service name is `db`
-            'PORT': config('MYSQL_PORT', default='28652'),
+            'USER': config('MYSQLUSER'),
+            'PASSWORD': config('MYSQLPASSWORD'),
+            'HOST': config('MYSQLHOST', default='db'),  # Docker service name is `db`
+            'PORT': config('MYSQLPORT', default='28652'),
         }
     }
 
