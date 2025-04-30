@@ -10,6 +10,8 @@ echo "📁 Checking project directory..."
 PROJECT_DIR="/"  # Update this to the correct root directory on Railway
 if [ "$(pwd)" != "$PROJECT_DIR" ]; then
     echo "❗ Wrong directory. Navigating to project directory..."
+    echo "Current directory: $(pwd)"
+
     cd "$PROJECT_DIR"
 fi
 
