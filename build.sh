@@ -39,12 +39,16 @@ source venv/bin/activate  # Activate the virtual environment
 echo "📦 Installing dependencies..."
 pip install --upgrade -r "$REQUIREMENTS_FILE"  # Install the dependencies
 
+# === Check if the database settings are correct ===
+echo "🔧 Checking database settings..."
+echo "Database URL: $DATABASE_URL"  # If you're using a DATABASE_URL environment variable
+
 # === Apply database migrations ===
-echo "🛠️ Applying migrations..."
-python3 manage.py migrate --noinput || { echo "Migrations failed"; exit 1; }
+echo "🛠️ Running migrations..."
+python manage.py migrate --noinput || { echo "❗ Migrations failed"; exit 1; }
 
 # === Collect static files ===
 echo "📁 Collecting static files..."
-python3 manage.py collectstatic --noinput || { echo "Collectstatic failed"; exit 1; }
+python manage.py collectstatic --noinput || { echo "❗ Static file collection failed"; exit 1; }
 
 echo "✅ Deployment finished successfully!"
