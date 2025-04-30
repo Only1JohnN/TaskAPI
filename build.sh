@@ -7,7 +7,7 @@ echo "🚀 Starting deployment script..."
 
 # === Confirm you are inside project folder ===
 echo "📁 Checking project directory..."
-PROJECT_DIR="/Only1JohnN/TaskAPI"  # Update this to the correct root directory on Railway
+PROJECT_DIR="/TaskAPI"  # Update this to the correct root directory on Railway
 if [ "$(pwd)" != "$PROJECT_DIR" ]; then
     echo "❗ Wrong directory. Navigating to project directory..."
     cd "$PROJECT_DIR"
