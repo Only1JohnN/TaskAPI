@@ -16,6 +16,7 @@
 @task_priority = medium
 @task_tags = budget, money
 @search_query = test
+@id = 1
 
 
 ######################################################
@@ -130,13 +131,13 @@ Authorization: Bearer {{access_token}}
 
 ######################################################
 ### Retrieve Single Category
-GET /api/categories/{id}/
+GET /api/categories/{{id}}/
 Authorization: Bearer {{access_token}}
 
 
 ######################################################
 ### Update Category
-PUT /api/categories/{id}/
+PUT /api/categories/{{id}}/
 Authorization: Bearer {{access_token}}
 Content-Type: application/json
 
@@ -147,6 +148,6 @@ Content-Type: application/json
 
 ######################################################
 ### Delete Category
-DELETE /api/categories/{id}/
+DELETE /api/categories/{{id}}/
 Authorization: Bearer {{access_token}}
 
