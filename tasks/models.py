@@ -1,18 +1,9 @@
 from django.db import models
 from users.models import CustomUser
+from categories.models import Category
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
-
-class Category(models.Model):
-    name = models.CharField(max_length=50)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='categories')
-    
-    class Meta:
-        unique_together = ('name', 'user')  # Prevent duplicates per user
-
-    def __str__(self):
-        return self.name
     
 class TaskModel(models.Model):
     """
@@ -45,7 +36,7 @@ class TaskModel(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
-    
+    parent_task = models.ForeignKey('self', null=True, blank=True, on_delete=models.CASCADE, related_name='subtasks')
 
     def __str__(self):
         return self.title
@@ -53,19 +44,3 @@ class TaskModel(models.Model):
         verbose_name = "Task"
         verbose_name_plural = "Tasks"
         ordering = ['-created_at']
-
-
-class TaskAttachment(models.Model):
-    task = models.ForeignKey(TaskModel, on_delete=models.CASCADE, related_name='attachments')
-    file = models.FileField(upload_to='task_attachments/')
-    uploaded_at = models.DateTimeField(auto_now_add=True)
-    
-    def __str__(self):
-        return f"{self.task.title} - {self.file.name}"
-
-
-class TaskComment(models.Model):
-    task = models.ForeignKey(TaskModel, on_delete=models.CASCADE, related_name='comments')
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    comment = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True)

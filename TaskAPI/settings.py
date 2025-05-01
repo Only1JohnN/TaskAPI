@@ -36,8 +36,11 @@ INSTALLED_APPS = [
     
     'corsheaders',
     
-    'tasks',  # Your tasks app
-    'users',  # Your users app
+    'users',                # users app
+    'tasks',                # tasks app
+    'categories',           # categories app
+    'comments',             # comments app
+    'attachments',          # attachments app
     
     'drf_spectacular',
     'django_filters',
@@ -79,7 +82,7 @@ WSGI_APPLICATION = 'TaskAPI.wsgi.application'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 # Check if the environment is development or production
-if DEBUG:
+if DEBUG is True:
     # SQLite for development
     DATABASES = {
         'default': {

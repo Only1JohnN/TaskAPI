@@ -1,18 +1,17 @@
 from rest_framework import viewsets
+from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.filters import SearchFilter
 from django_filters.rest_framework import DjangoFilterBackend
-from .models import TaskModel, Category, TaskAttachment, TaskComment
-from .serializers import TaskSerializer, CategorySerializer, TaskAttachmentSerializer
+from .models import TaskModel
+from .serializers import TaskSerializer
 from .filters import TaskFilter
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from .pagination import TaskPagination
 from .permissions import IsOwner
 from rest_framework import status
-from rest_framework.exceptions import ValidationError
-from django.db import IntegrityError
-from rest_framework.parsers import MultiPartParser, FormParser
+
 
 class TaskViewSet(viewsets.ModelViewSet):
     """
@@ -29,9 +28,12 @@ class TaskViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return TaskModel.objects.filter(user=self.request.user, is_deleted=False)
     
-
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        parent_task = None
+        # Check if the task is a subtask, then link it to a parent task
+        if 'parent_task_id' in self.request.data:
+            parent_task = TaskModel.objects.get(id=self.request.data['parent_task_id'])
+        serializer.save(user=self.request.user, parent_task=parent_task)
     
     def destroy(self, request, *args, **kwargs):
         task = self.get_object()
@@ -67,58 +69,34 @@ class TaskViewSet(viewsets.ModelViewSet):
         task.save()
         return Response({'status': 'Task marked as complete'})
     
-    @action(detail=True, methods=['post'], parser_classes=[MultiPartParser, FormParser])
-    def add_attachment(self, request, pk=None):
+    @action(detail=True, methods=['post'], url_path='subtasks')
+    def create_subtask(self, request, pk=None):
         """
-        Upload one or more files as attachments to a task.
-        Use 'files' as the key for multiple file uploads (multipart/form-data).
+        This action allows creating a subtask for an existing task.
         """
-        task = self.get_object()
-        files = request.FILES.getlist('files')  # Get list of files
+        task = self.get_object()  # Get the parent task
+        subtask_data = {
+            'title': request.data.get('title'),
+            'description': request.data.get('description'),
+            'status': request.data.get('status', 'PENDING'),
+            'priority': request.data.get('priority', 'MEDIUM'),
+            'parent_task': task.id,  # Link the new task as a subtask
+        }
+        
+        subtask_serializer = TaskSerializer(data=subtask_data)
+        if subtask_serializer.is_valid():
+            subtask_serializer.save(user=request.user, parent_task=task)
+            return Response(subtask_serializer.data, status=status.HTTP_201_CREATED)
+        return Response(subtask_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
-        if not files:
-            return Response({'detail': 'No files provided.'}, status=status.HTTP_400_BAD_REQUEST)
-    
-        attachments = []
-        for file in files:
-            attachment = TaskAttachment.objects.create(task=task, file=file)
-            attachments.append(attachment)
-    
-        # Serialize all attachments
-        serializer = TaskAttachmentSerializer(attachments, many=True)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-    
-    @action(detail=True, methods=['post'])
-    def add_comment(self, request, pk=None):
-        """
-        Add a comment to a task.
-        """
-        task = self.get_object()
-        comment_text = request.data.get('comment')
-        if not comment_text:
-            return Response({'detail': 'Comment text is required.'}, status=status.HTTP_400_BAD_REQUEST)
-
-        # Create the comment
-        comment = TaskComment.objects.create(task=task, user=request.user, comment=comment_text)
-        return Response({'id': comment.id, 'comment': comment.comment}, status=status.HTTP_201_CREATED)
-
-
-class CategoryViewSet(viewsets.ModelViewSet):
-    serializer_class = CategorySerializer
-    permission_classes = [IsAuthenticated, IsOwner]
-
-    def get_queryset(self):
-        return Category.objects.filter(user=self.request.user)
-
-    def perform_create(self, serializer):
-        try:
-            serializer.save(user=self.request.user)
-        except IntegrityError:
-            raise ValidationError({"name": "You already have a category with this name."})
-    
-    @action(detail=True, methods=['get'], url_path='tasks')
-    def tasks(self, request, pk=None):
-        category = self.get_object()
-        tasks = TaskModel.objects.filter(user=request.user, category=category, is_deleted=False)
-        serializer = TaskSerializer(tasks, many=True)
+    @action(detail=True, methods=['get'], url_path='sub-tasks')
+    def subtasks(self, request, pk=None):
+        # Get the parent task
+        parent_task = self.get_object()
+        
+        # Get all subtasks for this parent task
+        subtasks = parent_task.subtasks.all()  # Using related_name='subtasks'
+        
+        # Serialize and return the subtasks
+        serializer = TaskSerializer(subtasks, many=True)
         return Response(serializer.data)

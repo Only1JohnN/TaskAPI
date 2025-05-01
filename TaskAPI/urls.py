@@ -26,6 +26,9 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 
     path('api/v1/', include('tasks.urls')),  # Include the tasks app URLs
+    path('api/v1/', include('categories.urls')),  # Include the categories app URLs
+    path('api/v1/', include('comments.urls')),  # Include the comments app URLs
+    path('api/v1/', include('attachments.urls')),  # Include the attachments app URLs
     path('api/v1/', include('users.urls')),  # Include the users app URLs
 
     path('', RedirectView.as_view(url='/api/v1/register/', permanent=False)),  # 👈 redirect root to API
