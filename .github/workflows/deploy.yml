@@ -18,7 +18,9 @@ jobs:
           PA_API_TOKEN: ${{ secrets.PA_API_TOKEN }}
         run: |
           echo "Deploying to PythonAnywhere..."
+          
+          # Ensure PythonAnywhere pulls the latest code from GitHub
           curl -s -X POST \
             -H "Authorization: Token ${PA_API_TOKEN}" \
-            -d "action=reload" \
+            -d "action=git_pull" \
             https://www.pythonanywhere.com/api/v0/user/Only1JohnN/webapps/Only1JohnN.pythonanywhere.com/reload/
