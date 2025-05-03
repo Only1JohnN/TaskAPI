@@ -7,6 +7,7 @@ from django.utils import timezone
 from datetime import timedelta
 from django.template.loader import render_to_string
 from urllib.parse import quote
+from django.utils.timesince import timesince
 
 def generate_uid_and_token(user):
     uid = urlsafe_base64_encode(force_bytes(user.pk))
@@ -18,13 +19,13 @@ def send_verification_email(user):
     """
     Sends the email verification link after registration.
     """
-    user.save()
-    uid, token = generate_uid_and_token(user)  # Get the UID and token using our function
     
     # Set token expiry time
     token_expiry_time = timezone.now() + timedelta(hours=1)
     user.verification_token_expiry = token_expiry_time
     user.save()
+    
+    uid, token = generate_uid_and_token(user)  # Get the UID and token using our function
 
     verification_link = f"{settings.SITE_DOMAIN}/verify-email/?uid={quote(uid)}&token={quote(token)}"
 
@@ -46,19 +47,24 @@ def send_verification_email(user):
 
 def send_password_reset_email(user):
     """Send password reset email with verification link."""
-    user.save()
-    uid, token = generate_uid_and_token(user)
     
     # Set expiry for token (1 hour from now)
     token_expiry_time = timezone.now() + timedelta(hours=1)
     user.verification_token_expiry = token_expiry_time
+    user.save()
+    
+    uid, token = generate_uid_and_token(user)
 
     reset_link = f"{settings.SITE_DOMAIN}/reset-password/?uid={uid}&token={token}"
+    
+    # Calculate human-readable expiry string
+    expiry_string = timesince(timezone.now(), token_expiry_time)
 
     html_message = render_to_string('emails/password_reset.html', {
         'user': user,
         'reset_link': reset_link,
         'current_year': timezone.now().year,
+        'reset_password_expiry_time': expiry_string,  # e.g. "1 hour"
     })
 
     send_mail(
