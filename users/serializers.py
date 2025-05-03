@@ -19,7 +19,7 @@ class RegisterSerializer(serializers.ModelSerializer):
             )
         ]
     )
-
+    
     class Meta:
         model = User
         fields = ['first_name', 'last_name', 'email', 'profile_picture', 'password', 'confirm_password']
@@ -32,7 +32,7 @@ class RegisterSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data.pop('confirm_password')
         user = User.objects.create_user(**validated_data)
-        user.is_active = True  # Does not require verification for now cos of email service
+        user.is_active = False
         user.save()
         
         send_verification_email(user)
@@ -72,12 +72,49 @@ class LoginSerializer(serializers.Serializer):
             "user": {
                 "id": user.id,
                 "email": user.email,
+                "phone_number": getattr(user, 'phone_number', None),
                 "first_name": user.first_name,
                 "last_name": user.last_name,
                 "is_active": user.is_active,
+                "is_email_verified": getattr(user, 'is_email_verified', None),
+                "is_phone_verified": getattr(user, 'is_phone_verified', None),
                 "date_joined": user.date_joined,
                 "last_login": getattr(user, 'last_login', None),
                 "profile_picture": user.profile_picture.url if user.profile_picture else None,
             }
-        }
-        
+        }        
+
+
+class ForgotPasswordSerializer(serializers.Serializer):
+    email = serializers.EmailField(required=True)
+
+    def validate_email(self, value):
+        """
+        Validate that the email exists in the system.
+        """
+        if not User.objects.filter(email=value).exists():
+            raise serializers.ValidationError("User with this email does not exist.")
+        return value
+    
+
+class ResetPasswordSerializer(serializers.Serializer):
+    uid = serializers.CharField(required=True)
+    token = serializers.CharField(required=True)
+    new_password = serializers.CharField(write_only=True, required=True)
+    confirm_password = serializers.CharField(write_only=True, required=True)
+
+    def validate(self, data):
+        if data['new_password'] != data['confirm_password']:
+            raise serializers.ValidationError("New passwords do not match.")
+        return data
+    
+    
+class ChangePasswordSerializer(serializers.Serializer):
+    old_password = serializers.CharField(required=True)
+    new_password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
+    confirm_password = serializers.CharField(write_only=True, required=True)
+
+    def validate(self, attrs):
+        if attrs['new_password'] != attrs['confirm_password']:
+            raise serializers.ValidationError({"confirm_password": "New passwords do not match."})
+        return attrs
