@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Welcome to TaskAPI</title>
+  <style>
+    body {
+      background-color: #f9fafb;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    .email-container {
+      max-width: 600px;
+      margin: 40px auto;
+      background-color: #ffffff;
+      border-radius: 12px;
+      padding: 40px 30px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+    .header h1 {
+      font-size: 26px;
+      margin: 0;
+      color: #2d3748;
+    }
+    .subtext {
+      font-size: 16px;
+      color: #718096;
+      margin-bottom: 30px;
+      text-align: center;
+    }
+    .button {
+      display: block;
+      width: fit-content;
+      margin: 0 auto 30px;
+      background-color: #4f46e5;
+      color: white;
+      padding: 14px 24px;
+      text-decoration: none;
+      font-weight: bold;
+      border-radius: 6px;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+    }
+    .footer {
+      text-align: center;
+      font-size: 13px;
+      color: #a0aec0;
+      margin-top: 40px;
+    }
+  </style>
+</head>
+<body>
+  <div class="email-container">
+    <div class="header">
+      <h1>Welcome to TaskAPI! 🎉</h1>
+    </div>
+    
+    <div class="subtext">
+      Hi {{ user.first_name|default:"there" }},<br>
+      We're thrilled to have you on board! TaskAPI is your new home for organizing, tracking, and crushing your tasks.
+    </div>
+
+    <!-- Get Started Button -->
+    <a href="{{ login_link }}" class="button">Get Started</a>
+
+    <div class="subtext">
+      You can now begin creating tasks, setting priorities, and collaborating easily. We're here to help every step of the way.
+    </div>
+
+    <div class="footer">
+      &copy; {{ current_year }} TaskAPI. Built with ❤️ by Adeniyi John
+    </div>
+  </div>
+</body>
+</html>

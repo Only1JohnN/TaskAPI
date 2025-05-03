@@ -1,10 +1,10 @@
 # Define reusable variables
 @base_url = http://127.0.0.1:8000/api/v1
-@access_token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ1NjA5NTg0LCJpYXQiOjE3NDU2MDkyODQsImp0aSI6ImM3MTI0MDIzYWZiMTRhYWM4MjMzNDRjYmZmNGNiOGJhIiwidXNlcl9pZCI6MjZ9.pEciQUWj-RJFjhBVCvHtwnNVRiFJbcsyawSJMltIrEM
+@access_token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ2MjcxODYyLCJpYXQiOjE3NDYyNzA5NjIsImp0aSI6IjA3YWQxNTAyODViOTQzNzBhNjgxNTZkNjkzNDJmZTRkIiwidXNlcl9pZCI6Nn0.GMDmyYekpDsQwkv00luk9NaW8jjiTUk17Jcf6s8wEVE
 @refresh_token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc0NTY5NDg3MiwiaWF0IjoxNzQ1NjA4NDcyLCJqdGkiOiJmMjk5YjRiMzY3NjU0Mzc2OTczMTE5YzA1MzUyMzFlMCIsInVzZXJfaWQiOjI2fQ.WqkR5lrh4HzlnqX2VcUw4QAesMg7PYwMJmuiweHSL2E
-@verification_token = cord14-4391f095b12cc093facdeaca309913fc
-@uid =Mg
-@email = testuser@yopmail.com
+@verification_token = cp8012-c29b06fabf2e26a0849a1181e42573a8
+@uid =Ng
+@email = testuser4@yopmail.com
 @first_name = Test
 @last_name = User
 @password = Password123!
@@ -18,7 +18,6 @@
 @search_query = test
 @id = 1
 
-
 ######################################################
 ### Register a new user
 POST {{base_url}}/register/
@@ -27,6 +26,7 @@ Content-Type: application/json
 {
   "email": "{{email}}",
   "first_name": "{{first_name}}",
+  "phone_number": "12345678012",
   "last_name": "{{last_name}}",
   "profile_picture": null,
   "password": "{{password}}",
@@ -47,9 +47,21 @@ Content-Type: application/json
 
 {
   "email": "{{email}}",
-  "password": "{{password}}"
+  "password": "{{new_password}}"
 }
 
+
+######################################################
+### Change password
+POST {{base_url}}/change-password/
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "old_password": "{{password}}",
+  "new_password": "{{new_password}}",
+  "confirm_password": "{{new_password}}"
+}
 
 ######################################################
 ### Create a new task

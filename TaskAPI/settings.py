@@ -19,7 +19,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config('SECRET_KEY')
 DEBUG = config('DEBUG', default=False, cast=bool)
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=Csv(), default=['localhost', '127.0.0.1'])
-CORS_ALLOWED_ORIGINS = config('CORS_ALLOWED_ORIGINS', cast=Csv(), default='http://localhost:3000')
+CORS_ALLOWED_ORIGINS = config('CORS_ALLOWED_ORIGINS', cast=Csv(), default='localhost:3000')
 
 
 # Application Definition
@@ -63,8 +63,8 @@ ROOT_URLCONF = 'TaskAPI.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
+        'DIRS': [os.path.join(BASE_DIR, "templates")],      # Global templates directory
+        'APP_DIRS': True,   # Enable app-specific templates
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.request',
@@ -82,6 +82,7 @@ WSGI_APPLICATION = 'TaskAPI.wsgi.application'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 # Check if the environment is development or production
+# print(f"Debug: {DEBUG}")
 if DEBUG is True:
     # SQLite for development
     DATABASES = {
@@ -199,9 +200,12 @@ AUTH_USER_MODEL = 'users.CustomUser'
 # Common email setting
 DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='adeniyijohn2002@gmail.com')
 
-if DEBUG:  # Development
+if DEBUG is True:  # Development
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-    SITE_DOMAIN = 'localhost:8000/api/v1'
+    SITE_DOMAIN = config('SITE_DOMAIN', default='http://127.0.0.1:8000/api/v1')    
+    SECURE_SSL_REDIRECT = False
+    SESSION_COOKIE_SECURE = False
+    CSRF_COOKIE_SECURE = False
 
 else:  # Production
     EMAIL_BACKEND = config('EMAIL_BACKEND', default='django.core.mail.backends.smtp.EmailBackend')
@@ -212,7 +216,6 @@ else:  # Production
     EMAIL_USE_TLS = config('EMAIL_USE_TLS', cast=bool, default=True)
     EMAIL_TIMEOUT = config('EMAIL_TIMEOUT', cast=int, default=20)
     SITE_DOMAIN = config('SITE_DOMAIN', default='only1johnn.pythonanywhere.com')
-
     # Security settings — only enable in production
     SECURE_SSL_REDIRECT = True
     SESSION_COOKIE_SECURE = True
